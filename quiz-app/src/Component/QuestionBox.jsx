@@ -6,13 +6,12 @@ import questions from "../questions.js";
 import Result from "./Result";
 
 function QuestionBox(props) {
-  const {darkTheme,setDarkTheme} = props
+  const { darkTheme, setDarkTheme } = props;
   const [logo, setLogo] = useState(lightModeLogo);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [quizFinished, setQuizFinish] = useState(false);
-  const [userAnswer, setUserAnswer] = useState(
-    Array(questions.length).fill(null)
-  );
+  const [userAnswer, setUserAnswer] = useState(Array(questions.length));
+  const [Highlighted, setHighlighted] = useState(false);
 
   const handleThemeClick = () => {
     setDarkTheme(!darkTheme);
@@ -26,12 +25,11 @@ function QuestionBox(props) {
     };
   }, [darkTheme]);
 
-  const divTheme = useMemo(()=>{
-    return{
-      backgroundColor: darkTheme? "#555454" : "#D4D4D4"
-    }
-  })
-
+  const divTheme = useMemo(() => {
+    return {
+      backgroundColor: darkTheme ? "#555454" : "#D4D4D4",
+    };
+  });
 
   const handleOptionClick = (selectedOption) => {
     const newUserAnswer = [...userAnswer];
@@ -43,6 +41,14 @@ function QuestionBox(props) {
     } else {
       setQuizFinish(true);
     }
+  };
+
+  const highlightToggle = () => {
+    setHighlighted(true);
+  };
+
+  const removeHighlight = () => {
+    setHighlighted(false);
   };
 
   const calculateScore = () => {
@@ -62,7 +68,7 @@ function QuestionBox(props) {
 
   if (quizFinished) {
     const score = calculateScore();
-    return <Result score={score} />;
+    return <Result score={score} darkTheme={darkTheme} setDarkTheme={setDarkTheme} />;
   }
 
   return (
@@ -86,14 +92,14 @@ function QuestionBox(props) {
 
       <div id="body" style={toggleTheme}>
         <div id="quiz-box" style={divTheme}>
-          <div className="question-no">{`${currentQuestion + 1} / ${
-            questions.length
-          }`}</div>
-          <p className="question">{question.text}</p>
+          <div className="question-no">{`${currentQuestion + 1}`} / 5 </div>
+          <p style={{ color: Highlighted ? 'red' : 'white'}} className="question">
+            {question.text}
+          </p>
 
           <div id="options">
             {question.options.map((option) => (
-              <div 
+              <div
                 key={option.id}
                 className="option"
                 onClick={() => handleOptionClick(option.text)}
@@ -103,12 +109,20 @@ function QuestionBox(props) {
             ))}
           </div>
           <div id="highlighter">
-            <div className="highlight">Highlight</div>
-            <div className="rem-highlight">Remove Highlight</div>
+            <div
+              className="highlight"
+              onClick={highlightToggle}
+            >
+              Highlight
+            </div>
+            <div
+              className="rem-highlight"
+              onClick={removeHighlight}
+            >
+              Remove Highlight
+            </div>
           </div>
         </div>
-
-
       </div>
     </>
   );
